@@ -1,7 +1,7 @@
-# Chennai MTC GPS Bus Tracking System - Technical Implementation Guide
+# (Chennai) Teir-2 & Teir-3  GPS Bus Tracking System - Technical Implementation Guide
 
 ## Overview
-This guide provides complete implementation details for creating a Chennai-focused MTC GPS bus tracking system with 5 active devices operating within a 25km radius from Chennai city center.
+This guide provides complete implementation details for creating a Teir 2 & Tier 3-focused Government GPS bus tracking system with 5 active devices operating within a 25km radius from Chennai city center.
 
 ## Chennai-Specific Configuration
 
