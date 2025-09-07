@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trackez - Track Smart, Travel Easy | Chennai MTC GPS Tracking</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="brand-section">
+                        <div class="trackez-logo">
+                            <div class="logo-icon">📍</div>
+                            <div class="brand-text">
+                                <h1 class="app-title">Trackez</h1>
+                                <div class="brand-tagline">Track Smart, Travel Easy</div>
+                            </div>
+                        </div>
+                        <div class="mtc-partnership">
+                            <span class="partnership-text">Powered by Chennai MTC</span>
+                        </div>
+                    </div>
+                    <div class="system-status">
+                        <span class="status-indicator active"></span>
+                        <span class="status-text">5 GPS Devices Active</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="fleet-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Active Buses</span>
+                            <span class="stat-value" id="activeDevices">4</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Fleet Utilization</span>
+                            <span class="stat-value" id="fleetUtilization">70%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Avg GPS Accuracy</span>
+                            <span class="stat-value" id="avgAccuracy">3.3m</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Trackez Management Sidebar -->
+            <aside class="sidebar">
+                <div class="device-panel">
+                    <h3>Trackez Fleet Management</h3>
+                    
+                    <!-- Route Controls -->
+                    <div class="control-group">
+                        <label class="form-label">Monitor Route</label>
+                        <select id="routeView" class="form-control">
+                            <option value="all">All Chennai Routes</option>
+                            <option value="TKZ_CHN_001">21G - T.Nagar to Marina Beach</option>
+                            <option value="TKZ_CHN_002">27B - Anna Nagar to Guindy</option>
+                            <option value="TKZ_CHN_003">18C - Vadapalani to Adyar</option>
+                            <option value="TKZ_CHN_004">5M - Velachery to Egmore</option>
+                            <option value="TKZ_CHN_005">45B - Tambaram to Central Station</option>
+                        </select>
+                    </div>
+
+                    <!-- Language Toggle -->
+                    <div class="control-group">
+                        <label class="form-label">Language / மொழி</label>
+                        <select id="languageToggle" class="form-control">
+                            <option value="english">English</option>
+                            <option value="tamil">தமிழ் (Tamil)</option>
+                        </select>
+                    </div>
+
+                    <!-- Map Layers -->
+                    <div class="control-group">
+                        <label class="form-label">Display Options</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="showAccuracy" checked>
+                                <span>GPS Accuracy Circles</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="showRoutes" checked>
+                                <span>MTC Bus Routes</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="showLandmarks" checked>
+                                <span>Chennai Landmarks</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="showLabels" checked>
+                                <span>Bus Information</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Real-time Controls -->
+                    <div class="control-group">
+                        <label class="form-label">Trackez Live Monitoring</label>
+                        <button class="btn btn--primary btn--full-width" id="trackingToggle">
+                            🔴 Live Tracking ON
+                        </button>
+                        <div class="update-info">
+                            <small>Trackez updates every 3 seconds</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trackez Bus List -->
+                <div class="device-list">
+                    <h3>Trackez Monitored Fleet (5 Buses)</h3>
+                    <div id="busListContainer">
+                        <!-- Bus items populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Trackez Analytics Panel -->
+                <div class="alerts-panel">
+                    <h3>Trackez Smart Alerts</h3>
+                    <div id="alertsContainer">
+                        <!-- Alerts populated by JavaScript -->
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Chennai Map Container -->
+            <main class="map-section">
+                <div class="map-header">
+                    <h2 id="mapTitle">Trackez GPS Monitoring - Chennai MTC Fleet</h2>
+                    <div class="map-controls">
+                        <button class="btn btn--secondary" id="centerChennai">Center on Chennai</button>
+                        <button class="btn btn--secondary" id="refreshGPS">Refresh Trackez Data</button>
+                        <div class="coordinate-display" id="coordinateDisplay">
+                            Select a bus to view GPS coordinates
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Leaflet Map Container -->
+                <div class="map-container">
+                    <div id="chennaiMap"></div>
+                    
+                    <!-- Map Legend -->
+                    <div class="map-legend">
+                        <h4>Trackez Device Status</h4>
+                        <div class="legend-item">
+                            <div class="legend-marker online"></div>
+                            <span>Online & Tracking</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-marker low-battery"></div>
+                            <span>Low Battery Alert</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-marker offline"></div>
+                            <span>Device Offline</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-marker accuracy-circle"></div>
+                            <span>GPS Accuracy Zone</span>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Bus Details Modal -->
+        <div class="modal hidden" id="busModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title-section">
+                        <h3 id="modalTitle">Trackez Device Analytics</h3>
+                        <div class="modal-subtitle">Powered by Chennai MTC</div>
+                    </div>
+                    <button class="modal-close" id="closeModal">&times;</button>
+                </div>
+                <div class="modal-body" id="modalBody">
+                    <!-- Bus details populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Trackez Analytics Dashboard -->
+        <div class="analytics-panel">
+            <div class="analytics-header">
+                <h3>Trackez Fleet Intelligence Dashboard</h3>
+                <div class="analytics-subtitle">Real-time insights powered by advanced GPS tracking technology</div>
+            </div>
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <div class="card-icon">🛰️</div>
+                    <h4>GPS Performance</h4>
+                    <div class="metric">
+                        <span class="metric-value" id="totalSatellites">38</span>
+                        <span class="metric-label">Total Satellites</span>
+                    </div>
+                </div>
+                <div class="analytics-card">
+                    <div class="card-icon">👥</div>
+                    <h4>Current Passengers</h4>
+                    <div class="metric">
+                        <span class="metric-value" id="totalPassengers">183</span>
+                        <span class="metric-label">Total Passengers</span>
+                    </div>
+                </div>
+                <div class="analytics-card">
+                    <div class="card-icon">⚡</div>
+                    <h4>System Uptime</h4>
+                    <div class="metric">
+                        <span class="metric-value" id="systemUptime">99.2%</span>
+                        <span class="metric-label">Platform Reliability</span>
+                    </div>
+                </div>
+                <div class="analytics-card">
+                    <div class="card-icon">📍</div>
+                    <h4>Coverage Area</h4>
+                    <div class="metric">
+                        <span class="metric-value" id="coverageRadius">25km</span>
+                        <span class="metric-label">Chennai Radius</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
